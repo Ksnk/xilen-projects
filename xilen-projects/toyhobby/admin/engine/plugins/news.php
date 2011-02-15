@@ -425,6 +425,10 @@ class news extends ml_plugin
 					array('заголовок','the_header','html_edit'),
 					array('картинка','pic_small','image'),
 					array('картинка','pic_big','image','dontshow'=>true),
+					array('картинка2','pic1_small','image'),
+					array('картинка2','pic1_big','image','dontshow'=>true),
+					array('картинка3','pic2_small','image'),
+					array('картинка3','pic2_big','image','dontshow'=>true),
 					array('текст','the_text','html_edit','afilter'=>30)
 		)
 		,'base'=>'_news'
@@ -594,14 +598,18 @@ order by `id` LIMIT 50;';
 		$news=array();
 		if (!empty($res))
 		foreach($res as $v) {
-			$news[]=$this->getData($v,$tpl);
+			$xx=$this->getData($v,$tpl);
+			$xx['secpp']=>$this->parent->getPar('sec_per_picture',4);
+			$news[]=$xx;
 		}
 		$news[count($news)-1]['last']=true;
 	//*--*/echo '<!-- ';print_r($pages);print_r(debug_backtrace());echo ' -->';
 	//debug($pages);
 	debug($news);
 	//debug(array(NEWS_TPL,''.$tpl));
-		return $x[$tpl]=smart_template(array(NEWS_TPL,''.$tpl),array('news'=>$news,'pages'=>$pages));
+		return $x[$tpl]=smart_template(array(NEWS_TPL,''.$tpl),array(
+		'news'=>$news,
+		'pages'=>$pages));
 	}
 	
 	function getData(&$v,$tpl){
@@ -629,14 +637,21 @@ order by `id` LIMIT 50;';
 		//debug('xxx-"'.$sm.'" '.$v['pic_small'] );
 		if(!empty($sm)){
 			$pic= new xPic();
-			$pic->v=array(
-				'pic_comment'=>'',
-				'item_url'=>$tpl=='news_b'?$this->parent->curl('do','id').'do=newslist&id='.$v['id']:'',
-				'pic_small'=>$v['pic_small'],
-				'pic_big'=>$v['pic_big']
-			);
-			$curnews['img']=$pic->getData();
-			$curnews['img']['align']=xElement::aligns($v['align']);
+			foreach(array('pic','pic1','pic2') as $x ){
+				if(!empty($v[$x.'_small'])){
+					$pic->v=array(
+						'pic_comment'=>'',
+						'item_url'=>$tpl=='news_b'?$this->parent->curl('do','id').'do=newslist&id='.$v['id']:'',
+						'pic_small'=>$v[$x.'_small'],
+						'pic_big'=>$v[$x.'_big']
+					);
+					$pic->v[$x]=$v[$x];
+					$curnews['img'][]=$pic->getData();
+//					$curnews['img']['align']=xElement::aligns($v['align']);
+				}
+			};
+//			$curnews['img']=$pic->getData();
+
 		}
 		return $curnews;
 	}
@@ -644,6 +659,7 @@ order by `id` LIMIT 50;';
 	function get_parameters($par){
 		$par['list'][]=array('sub'=>'Новости - дайджест новостей','title'=>'Количество слов выводимое в списке','name'=>'news_words_at_page');
 		$par['list'][]=array('title'=>'Количество новостей в списке','name'=>'news_per_list');
+		$par['list'][]=array('title'=>'Смена картинок (секунды)','name'=>'sec_per_picture');
 		$par['list'][]=array('sub'=>'Новости - архив новостей','title'=>'Количество новостей на странице','name'=>'news_per_page');
 		$par['list'][]=array('sub'=>'Новости - администрирование','title'=>'Количество новостей на странице','name'=>'words-perpage');
 	}

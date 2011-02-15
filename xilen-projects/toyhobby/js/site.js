@@ -1,5 +1,31 @@
 $(function(){	
-    var scroll= cookie('scroll');
+
+	// работа с галерейкой
+$('.img_gallery').css({
+	position:'relative'
+}).each(function(){
+	var i=0,self=$(this),par=[];
+	$vv=self.find('div').each(function()	{
+		par.push(this);
+		if(i++==0){
+			$(this).show();
+		} else {
+			$(this).hide();
+		}
+	});
+	var time=self.attr('time')||self.attr('data-time')||4;
+	if($vv.length>1){
+		setInterval(function(){
+			var x=par.shift();
+			$(par[0]).show();
+			$(x).hide();
+			par.push(x);
+		
+		},time*1000)
+	}
+})
+	
+	var scroll= cookie('scroll');
     if(scroll){
     	window.scrollTo(0,scroll);
     	cookie('scroll',0);
@@ -143,7 +169,7 @@ function WindowO(e,s,w,h)
 			}
 			$.getJSON(this.href.replace('ajax=1','').replace(/(do=\w*)/,'$1&ajax=1'),function(data){
 				if(data.error) alert(data.error);
-				if(data.debug) alert(data.debug);
+				if(data.debug) alert(data.debug);
 				if(data.data) {
 				    self.container=$('<div class="ainfo"></div>').insertAfter($(parent)).hide().html(data.data)[0];
 //				    $('#debug').append("<li>click "+ "<"+"/li>");
@@ -165,7 +191,8 @@ window.showsearchbar=function (){
 	if(!x.shown)
 		x.show_menu();
 	return false;
-};
+}; 
+
 })	
 // поставить куку cookie.
 function cookie(name,value,opt){
@@ -201,7 +228,7 @@ function cookie(name,value,opt){
 	}
 };function checkImg(el,width,height){
     if(!el || !el.src) return ;
-	var Img=new Image();
+	var Img=new Image(); 
 	Img.onload=function(){
 		if(Img.width && Img.height) {
 			if(!width) if(el.style.width) width=parseInt(el.style.width);
