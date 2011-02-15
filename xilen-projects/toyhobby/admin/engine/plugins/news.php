@@ -599,7 +599,7 @@ order by `id` LIMIT 50;';
 		if (!empty($res))
 		foreach($res as $v) {
 			$xx=$this->getData($v,$tpl);
-			$xx['secpp']=>$this->parent->getPar('sec_per_picture',4);
+			$xx['secpp']=$this->parent->getPar('sec_per_picture',4);
 			$news[]=$xx;
 		}
 		$news[count($news)-1]['last']=true;
